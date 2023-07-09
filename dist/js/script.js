@@ -200,21 +200,6 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     const elem = '.menu .container';
 
-    const getResource = async (url) => {
-        const res = await fetch(url);
-        if (!res.ok) { //тк catch не считает 400, 500 за ошибки и игнорирует их, это позволит перебросить ошибку в блок catch
-            throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-        }
-        return await res.json();
-    };
-
-    /*     getResource('http://localhost:3000/menu')
-            .then((data) => {
-                data.forEach(({ img, altimg, title, descr, price }) => {
-                    new MenuCard(img, altimg, title, descr, price, elem).render();
-                });
-            }); */
-
     //varian throw axios library
     axios.get('http://localhost:3000/menu')
         .then((data) => {
@@ -222,28 +207,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 new MenuCard(img, altimg, title, descr, price, elem).render();
             });
         });
-
-    // 2 variant
-    /*     getResource('http://localhost:3000/menu')
-            .then((data) => createCard(data));
-    
-        function createCard(data) {
-            data.forEach(({ img, altimg, title, descr, price }) => {
-                const element = document.createElement('div');
-                element.classList.add('menu__item');
-                element.innerHTML = `
-                    <img src=${img} alt=${altimg}>
-                    <h3 class="menu__item-subtitle">${title}</h3>
-                    <div class="menu__item-descr">${descr}</div>
-                    <div class="menu__item-divider"></div>
-                    <div class="menu__item-price">
-                        <div class="menu__item-cost">Цена:</div>
-                        <div class="menu__item-total"><span>${price}</span> дол/день</div>
-                    </div>
-                `;
-                document.querySelector(elem).append(element);
-            });
-        } */
 
     //Forms
     const forms = document.querySelectorAll('form');
@@ -325,5 +288,63 @@ window.addEventListener('DOMContentLoaded', () => {
             closeModal();
         }, 4000);
     }
+
+
+    //slider
+    const current = document.querySelector('#current'),
+        total = document.querySelector('#total'),
+
+        slides = document.querySelectorAll('.offer__slide'),
+        prev = document.querySelector('.offer__slider-prev'),
+        next = document.querySelector('.offer__slider-next');
+
+    let slideIndex = 1;
+
+    showSlides(slideIndex);
+
+    if (slides.length < 10) {
+        total.innerHTML = `0${slides.length}`;
+    } else {
+        total.innerHTML = slides.length;
+    }
+
+    function hideSlide() {
+        slides.forEach(item => {
+            item.classList.add('hide');
+            item.classList.remove('show', 'fade');
+        });
+    }
+
+    function showSlide(i) {
+        slides[i].classList.remove('hide');
+        slides[i].classList.add('show', 'fade');
+    }
+
+    function showSlides(n) {
+        if (n > slides.length) {
+            slideIndex = 1;
+        };
+        if (n < 1) {
+            slideIndex = slides.length;
+        }
+
+        hideSlide();
+        showSlide(slideIndex - 1);
+
+        if (n < 10) {
+            current.textContent = `0${slideIndex}`;
+        } else {
+            current.textContent = slideIndex;
+        };
+    }
+
+    next.addEventListener('click', () => {
+        console.log(slideIndex);
+        showSlides(slideIndex += 1);
+    });
+    prev.addEventListener('click', () => {
+        console.log(slideIndex);
+        showSlides(slideIndex -= 1);
+    });
 
 });
