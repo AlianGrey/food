@@ -301,10 +301,11 @@ window.addEventListener('DOMContentLoaded', () => {
         slideField = document.querySelector('.offer__slider-inner'),
         width = window.getComputedStyle(sliderWrapper).width,  //результат будет: '650px' *4 = 2600 px общая ширина на 4 слайда
 
-        sliderParents = document.querySelector('.offer__slider'); //для точек внизу слайдера
+        slider = document.querySelector('.offer__slider'); //для точек внизу слайдера
 
     let slideIndex = 1,
-        offset = 0;
+        offset = 0,
+        dots = [];
 
     if (slides.length < 10) {
         total.innerHTML = `0${slides.length}`;
@@ -321,6 +322,40 @@ window.addEventListener('DOMContentLoaded', () => {
 
     slides.forEach(slide => slide.style.width = width);
 
+    function showCurrentIndexSlider() {
+        if (slideIndex < 10) {
+            current.innerHTML = `0${slideIndex}`;
+        } else {
+            current.innerHTML = slideIndex;
+        }
+    }
+
+    function addOpacityForDots() {
+        dots.forEach(dot => dot.style.opacity = '.5');
+        dots[slideIndex - 1].style.opacity = 1;
+    }
+
+    //dots for slider
+    slider.style.position = 'relative';
+
+    let indicators = document.createElement('ol');
+    indicators.classList.add('carousel-indicators');
+    slider.append(indicators);
+
+    for (let i = 0; i < slides.length; i++) {
+        const dot = document.createElement('li');
+        dot.setAttribute('data-slide-to', i + 1);
+        dot.classList.add('dot');
+        if (i == 0) {
+            dot.style.opacity = 1;
+        };
+
+        indicators.append(dot);
+        dots.push(dot);
+    };
+
+
+
     next.addEventListener('click', () => {
         if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
             slideIndex = 1;
@@ -332,11 +367,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
         slideField.style.transform = `translateX(-${offset}px)`;
 
-        if (slideIndex < 10) {
-            current.innerHTML = `0${slideIndex}`;
-        } else {
-            current.innerHTML = slideIndex;
-        }
+        showCurrentIndexSlider();
+        addOpacityForDots();
+
     });
 
     prev.addEventListener('click', () => {
@@ -350,61 +383,24 @@ window.addEventListener('DOMContentLoaded', () => {
 
         slideField.style.transform = `translateX(-${offset}px)`;
 
-        if (slideIndex < 10) {
-            current.innerHTML = `0${slideIndex}`;
-        } else {
-            current.innerHTML = slideIndex;
-        }
+        showCurrentIndexSlider();
+        addOpacityForDots();
+
+    });
+
+    dots.forEach(dot => {
+        dot.addEventListener('click', (e) => {
+            let slideTo = e.target.getAttribute('data-slide-to');
+            slideIndex = slideTo;
+
+            offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+            slideField.style.transform = `translateX(-${offset}px)`;
+
+            showCurrentIndexSlider();
+            addOpacityForDots();
+        });
     });
 
 
-    // 2 varian slider
-    /* 
-        showSlides(slideIndex);
-    
-        if (slides.length < 10) {
-            total.innerHTML = `0${slides.length}`;
-        } else {
-            total.innerHTML = slides.length;
-        }
-    
-        function hideSlide() {
-            slides.forEach(item => {
-                item.classList.add('hide');
-                item.classList.remove('show', 'fade');
-            });
-        }
-    
-        function showSlide(i) {
-            slides[i].classList.remove('hide');
-            slides[i].classList.add('show', 'fade');
-        }
-    
-        function showSlides(n) {
-            if (n > slides.length) {
-                slideIndex = 1;
-            };
-            if (n < 1) {
-                slideIndex = slides.length;
-            }
-    
-            hideSlide();
-            showSlide(slideIndex - 1);
-    
-            if (n < 10) {
-                current.textContent = `0${slideIndex}`;
-            } else {
-                current.textContent = slideIndex;
-            };
-        }
-    
-        next.addEventListener('click', () => {
-            console.log(slideIndex);
-            showSlides(slideIndex += 1);
-        });
-        prev.addEventListener('click', () => {
-            console.log(slideIndex);
-            showSlides(slideIndex -= 1);
-        }); */
 
 });
