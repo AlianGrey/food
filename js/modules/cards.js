@@ -1,3 +1,5 @@
+import { getResource } from "../services/services";
+
 function cards() {
 
     //tabs with menu
@@ -45,13 +47,18 @@ function cards() {
     }
     const elem = '.menu .container';
 
-    //varian throw axios library
-    axios.get('http://localhost:3000/menu')
+    //varian throw fetch
+    getResource('http://localhost:3000/menu')
         .then((data) => {
-            data.data.forEach(({ img, altimg, title, descr, price }) => {
+            data.forEach(({ img, altimg, title, descr, price }) => {
                 new MenuCard(img, altimg, title, descr, price, elem).render();
             });
         });
+
+
+
+
+
 }
 
-module.exports = cards;
+export default cards;

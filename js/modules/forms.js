@@ -1,7 +1,10 @@
-function forms() {
+import { closeModal, openModal } from "./modal";
+import { postData } from "../services/services";
+
+function forms(formSelector, modalSelector, modalTimerId) {
 
     //Forms
-    const forms = document.querySelectorAll('form');
+    const forms = document.querySelectorAll(formSelector);
 
     const message = {
         loading: '../img/form/spinner.svg',
@@ -13,16 +16,7 @@ function forms() {
         bindPostData(item);
     });
 
-    const postData = async (url, data) => {
-        let res = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: data
-        });
-        return await res.json();
-    };
+
 
     function bindPostData(form) {
         form.addEventListener('submit', (e) => {
@@ -31,8 +25,8 @@ function forms() {
             const statusMessage = document.createElement('img');
             statusMessage.src = message.loading;
             statusMessage.style.cssText = `
-          display: block;
-          margin: 0 auto;
+                display: block;
+                margin: 0 auto;
           `;
 
             form.insertAdjacentElement('afterend', statusMessage); // в конец формы после закрытия тега
@@ -43,7 +37,7 @@ function forms() {
 
             postData('http://localhost:3000/requests', json)
                 .then(data => {
-                    console.log(data);
+                    //console.log(data);
                     showThanksModal(message.success);
                     statusMessage.remove();
                 }).catch(() => {
@@ -59,7 +53,7 @@ function forms() {
         const prevModalDialog = document.querySelector('.modal__dialog');
         prevModalDialog.classList.add('hide');
 
-        openModal();
+        openModal(modalSelector, modalTimerId);
 
         const thanksModal = document.createElement('div');
         thanksModal.classList.add('modal__dialog');
@@ -77,10 +71,10 @@ function forms() {
             thanksModal.remove();
             prevModalDialog.classList.add('show');
             prevModalDialog.classList.remove('hide');
-            closeModal();
+            closeModal(modalSelector);
         }, 4000);
     }
 
 }
 
-module.exports = forms;
+export default forms;
